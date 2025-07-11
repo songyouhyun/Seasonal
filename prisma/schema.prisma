@@ -9,39 +9,37 @@ datasource db {
 }
 
 model Cafe {
-  id              Int             @id @default(autoincrement())
-  name            String
-  address         String
-  opening_hours   String
-  bean_updated_at DateTime?
-  created_at      DateTime        @default(now())
+  id         Int      @id @default(autoincrement())
+  name       String
+  address    String
+  created_at DateTime @default(now())
+  updated_at DateTime
 
-  lineupReports   Lineup_report[]
+  lineup Lineup[]
 }
 
 model User {
-  id         Int             @id @default(autoincrement())
-  email      String          @unique
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
   nickname   String
-  role       String
-  created_at DateTime        @default(now())
-  updated_at DateTime        @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  lineupReports Lineup_report[]
+  lineup Lineup[]
 }
 
-model Lineup_report {
-  id            Int       @id @default(autoincrement())
-  status        String
-  image_url     String?
-  reported_at   DateTime  @default(now())
-  reported_date DateTime  // for 1-day uniqueness
+model Lineup {
+  id            Int      @id @default(autoincrement())
+  image_url     String
+  reported_date DateTime // for 1-day uniqueness
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   cafe_id Int
   user_id Int
 
-  cafe    Cafe   @relation(fields: [cafe_id], references: [id])
-  user    User   @relation(fields: [user_id], references: [id])
+  cafe Cafe @relation(fields: [cafe_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
 
   @@unique([user_id, cafe_id, reported_date])
 }
