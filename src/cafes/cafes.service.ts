@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCafeDto } from './dto/create-cafe.dto';
-import { UpdateCafeDto } from './dto/update-cafe.dto';
+import { AddLineupDto } from './dto/add-lineup.dto';
+import { FileStorageService } from '../file-storage/file-storage.service';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class CafesService {
-  create(createCafeDto: CreateCafeDto) {
-    return 'This action adds a new cafe';
-  }
-
-  findAll() {
-    return `This action returns all cafes`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} cafe`;
-  }
-
-  update(id: number, updateCafeDto: UpdateCafeDto) {
-    return `This action updates a #${id} cafe`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} cafe`;
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly fileStorageService: FileStorageService,
+  ) {}
+  async addLineup(
+    cafeId: number,
+    photo: Express.Multer.File,
+    dto: AddLineupDto,
+  ): Promise<void> {
+    const imageUrl: string = await this.fileStorageService.uploadFile(photo);
+    await this.prisma.lineup.create({
+      data: {
+        reported_date: dto.reportedDate,
+        image_url: imageUrl,
+        cafe: { connect: { id: cafeId } },
+      },
+    });
   }
 }

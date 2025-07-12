@@ -36,10 +36,10 @@ model Lineup {
   updated_at    DateTime @updatedAt
 
   cafe_id Int
-  user_id Int
+  user_id Int?
 
-  cafe Cafe @relation(fields: [cafe_id], references: [id])
-  user User @relation(fields: [user_id], references: [id])
+  cafe Cafe  @relation(fields: [cafe_id], references: [id])
+  user User? @relation(fields: [user_id], references: [id])
 
-  @@unique([user_id, cafe_id, reported_date])
+  @@unique([cafe_id, reported_date])
 }
