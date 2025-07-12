@@ -31,7 +31,7 @@ model User {
 model Lineup {
   id            Int      @id @default(autoincrement())
   image_url     String
-  reported_date DateTime // for 1-day uniqueness
+  reported_date DateTime
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
@@ -40,6 +40,4 @@ model Lineup {
 
   cafe Cafe  @relation(fields: [cafe_id], references: [id])
   user User? @relation(fields: [user_id], references: [id])
-
-  @@unique([cafe_id, reported_date])
 }
