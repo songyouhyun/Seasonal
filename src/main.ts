@@ -12,6 +12,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.enableCors();
 
   // 파일 업로드 크기 제한 (예: 10MB)
   app.use(express.json({ limit: '10mb' }));
