@@ -1,10 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CafesModule } from './cafes/cafes.module';
+import { CafeModule } from './cafe/cafe.module';
+import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
-  imports: [CafesModule],
+  imports: [
+    CafeModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    ServeStaticModule.forRoot({
+      rootPath: process.env.UPLOAD_DIR,
+      serveRoot: '/upload',
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
