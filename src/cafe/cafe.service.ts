@@ -4,6 +4,7 @@ import { FileStorageService } from '../file-storage/file-storage.service';
 import { PrismaService } from '../prisma.service';
 import { Cafe } from 'generated/prisma/client';
 import { CafeWithLineup } from './types/cafe-with-lineup';
+import { CreateCafeDto } from './dto/create-cafe.dto';
 
 @Injectable()
 export class CafeService {
@@ -11,6 +12,15 @@ export class CafeService {
     private readonly prisma: PrismaService,
     private readonly fileStorageService: FileStorageService,
   ) {}
+
+  async createCafe(dto: CreateCafeDto): Promise<void> {
+    await this.prisma.cafe.create({
+      data: {
+        name: dto.name,
+        address: dto.address,
+      },
+    });
+  }
 
   async getCafes(hasLineup?: boolean): Promise<Cafe[]> {
     return this.prisma.cafe.findMany({
