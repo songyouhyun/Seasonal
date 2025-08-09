@@ -1,16 +1,11 @@
 services:
-  postgres:
-    image: postgres:15
-    container_name: seasonal_postgres
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: seasonal_backend_prod
     restart: always
     ports:
-      - '5432:5432'
+      - '3000:3000'
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: seasonal
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
+      DATABASE_URL: ${DATABASE_URL}
