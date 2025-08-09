@@ -1,16 +1,20 @@
 services:
-  postgres:
-    image: postgres:15
-    container_name: seasonal_postgres
+  mariadb:
+    image: mariadb:latest
+    container_name: seasonal_mariadb_local
     restart: always
     ports:
-      - '5432:5432'
+      - '3306:3306'
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: seasonal
+      MARIADB_ROOT_PASSWORD: test
+      MARIADB_DATABASE: test
+      MARIADB_USER: test
+      MARIADB_PASSWORD: test
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mariadb_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
 
 volumes:
-  pgdata:
+  mariadb_data:

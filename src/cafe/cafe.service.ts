@@ -3,6 +3,7 @@ import { AddLineupDto } from './dto/add-lineup.dto';
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { PrismaService } from '../prisma.service';
 import { Cafe } from 'generated/prisma/client';
+import { CafeWithLineup } from './types/cafe-with-lineup';
 
 @Injectable()
 export class CafeService {
@@ -19,7 +20,17 @@ export class CafeService {
   }
 
   async getCafe(id: number): Promise<Cafe> {
-    const cafe: Cafe = await this.prisma.cafe.findUnique({
+    const cafe: Cafe = await this.prisma.cafe.findUniqueOrThrow({
+      where: { id },
+    });
+    if (!cafe) {
+      throw new NotFoundException('Cafe not found');
+    }
+    return cafe;
+  }
+
+  async getCafeWithLineup(id: number): Promise<CafeWithLineup> {
+    const cafe = await this.prisma.cafe.findUnique({
       where: { id },
       include: { lineup: true },
     });

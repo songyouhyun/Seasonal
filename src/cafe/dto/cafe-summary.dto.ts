@@ -1,10 +1,5 @@
 import { Cafe } from "generated/prisma";
 
-export type lineupItem = {
-  reportedDate: Date;
-  imageUrl: string;
-};
-
 export class CafeSummaryDto {
   id: number;
   name: string;
