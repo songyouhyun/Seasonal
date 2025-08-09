@@ -3,7 +3,7 @@ import { AddLineupDto } from './dto/add-lineup.dto';
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { PrismaService } from '../prisma.service';
 import { Cafe } from 'generated/prisma/client';
-import { CafeWithLineup } from './types/cafe-with-lineup';
+import { CafeWithLatestReported, CafeWithLineup } from './types/types';
 import { CreateCafeDto } from './dto/create-cafe.dto';
 
 @Injectable()
@@ -22,15 +22,21 @@ export class CafeService {
     });
   }
 
-  async getCafes(hasLineup?: boolean): Promise<Cafe[]> {
+  async getCafes(hasLineup?: boolean): Promise<CafeWithLatestReported[]> {
     return this.prisma.cafe.findMany({
-      take: 1,
       where: hasLineup ? { lineup: { some: {} } } : {},
+      include: {
+        lineup: {
+          select: { reported_date: true },
+          orderBy: { reported_date: 'desc' },
+          take: 1,
+        },
+      },
     });
   }
 
   async getCafe(id: number): Promise<Cafe> {
-    const cafe: Cafe = await this.prisma.cafe.findUniqueOrThrow({
+    const cafe: Cafe = await this.prisma.cafe.findUnique({
       where: { id },
     });
     if (!cafe) {
@@ -40,7 +46,7 @@ export class CafeService {
   }
 
   async getCafeWithLineup(id: number): Promise<CafeWithLineup> {
-    const cafe = await this.prisma.cafe.findUnique({
+    const cafe: CafeWithLineup = await this.prisma.cafe.findUnique({
       where: { id },
       include: { lineup: true },
     });

@@ -12,10 +12,9 @@ import { CafeService } from './cafe.service';
 import { AddLineupDto } from './dto/add-lineup.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CafeSummaryDto } from './dto/cafe-summary.dto';
-import { Cafe } from 'generated/prisma';
 import { CafeDetailDto } from './dto/cafe-detail.dto';
-import { CafeWithLineup } from './types/cafe-with-lineup';
 import { CreateCafeDto } from './dto/create-cafe.dto';
+import { CafeWithLatestReported, CafeWithLineup } from './types/types';
 
 @Controller('cafes')
 export class CafeController {
@@ -28,7 +27,7 @@ export class CafeController {
 
   @Get('')
   async getCafes(@Query('hasLineup') hasLineup = false): Promise<CafeSummaryDto[]> {
-    const cafes: Cafe[] = await this.cafeService.getCafes(hasLineup);
+    const cafes: CafeWithLatestReported[] = await this.cafeService.getCafes(hasLineup);
     return CafeSummaryDto.from(cafes);
   }
 

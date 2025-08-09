@@ -1,5 +1,5 @@
 import { Lineup } from "generated/prisma";
-import { CafeWithLineup } from "../types/cafe-with-lineup";
+import { CafeWithLineup } from "../types/types";
 
 type LineupItem = {
   id: number;
