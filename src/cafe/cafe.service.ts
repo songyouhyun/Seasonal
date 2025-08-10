@@ -5,6 +5,8 @@ import { PrismaService } from '../prisma.service';
 import { Cafe } from 'generated/prisma/client';
 import { CafeWithLatestReported, CafeWithLineup } from './types/types';
 import { CreateCafeDto } from './dto/create-cafe.dto';
+import { GetCafesQueryDto } from './dto/get-cafes-query.dto';
+import { Page } from 'src/common/types';
 
 @Injectable()
 export class CafeService {
@@ -22,17 +24,37 @@ export class CafeService {
     });
   }
 
-  async getCafes(hasLineup?: boolean): Promise<CafeWithLatestReported[]> {
-    return this.prisma.cafe.findMany({
-      where: hasLineup ? { lineup: { some: {} } } : {},
+  async getCafes(
+    { hasLineup, limit, offset }: GetCafesQueryDto,
+  ): Promise<Page<CafeWithLatestReported>> {
+    const where =
+      hasLineup === undefined
+        ? {}
+        : hasLineup
+          ? { lineup: { some: {} } }
+          : { lineup: { none: {} } };
+
+    const rows = await this.prisma.cafe.findMany({
+      where,
+      skip: offset,
+      take: limit,
+      orderBy: { id: "desc" },
       include: {
         lineup: {
           select: { reported_date: true },
-          orderBy: { reported_date: 'desc' },
+          orderBy: { reported_date: "desc" },
           take: 1,
         },
       },
     });
+
+    const hasMore = rows.length > limit;
+    if (hasMore) rows.pop();
+
+    return {
+      items: rows,
+      nextOffset: hasMore ? offset + limit : undefined,
+    };
   }
 
   async getCafe(id: number): Promise<Cafe> {

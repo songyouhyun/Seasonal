@@ -15,6 +15,8 @@ import { CafeSummaryDto } from './dto/cafe-summary.dto';
 import { CafeDetailDto } from './dto/cafe-detail.dto';
 import { CreateCafeDto } from './dto/create-cafe.dto';
 import { CafeWithLatestReported, CafeWithLineup } from './types/types';
+import { GetCafesQueryDto } from './dto/get-cafes-query.dto';
+import { Page } from 'src/common/types';
 
 @Controller('cafes')
 export class CafeController {
@@ -26,9 +28,8 @@ export class CafeController {
   }
 
   @Get('')
-  async getCafes(@Query('hasLineup') hasLineup = false): Promise<CafeSummaryDto[]> {
-    const cafes: CafeWithLatestReported[] = await this.cafeService.getCafes(hasLineup);
-    return CafeSummaryDto.from(cafes);
+  async getCafes(@Query() query: GetCafesQueryDto): Promise<Page<CafeWithLatestReported>> {
+    return this.cafeService.getCafes(query);
   }
 
   @Get(':id')
