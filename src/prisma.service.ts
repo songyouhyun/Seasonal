@@ -14,7 +14,11 @@ export class PrismaService
         { level: 'warn', emit: 'stdout' },
         { level: 'error', emit: 'stdout' },]
     });
+<<<<<<< HEAD
     this.$on('query', (e) => console.log(`[prisma] ${e.query} ${e.params} +${e.duration}ms`));
+=======
+    this.$on('query', (e) => console.log(`[prisma] ${e.query} +${e.duration}ms`));
+>>>>>>> b0f00b7 (Prisma 쿼리 로깅)
   }
 
   async onModuleInit() {
