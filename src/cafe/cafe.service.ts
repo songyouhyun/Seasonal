@@ -28,10 +28,9 @@ export class CafeService {
     { hasLineup, limit, offset }: GetCafesQueryDto,
   ): Promise<Page<CafeWithLatestReported>> {
       if (hasLineup) {
-          const latest = await this.prisma.lineup.groupBy({
-              by: ["cafe_id"],
-              _max: { reported_date: true },
-              orderBy: { _max: { reported_date: "desc" } },
+          const latest = await this.prisma.lineup.findMany({
+              distinct: ['cafe_id'],
+              orderBy: { reported_date: "desc" },
               take: limit,
               skip: offset,
           });
@@ -42,7 +41,7 @@ export class CafeService {
               where: { id: { in: ids } },
           });
 
-          const latestMap = new Map(latest.map(r => [r.cafe_id, r._max.reported_date]));
+          const latestMap = new Map(latest.map(r => [r.cafe_id, r.reported_date]));
 
           return {
               items: ids.map(id => ({
