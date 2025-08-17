@@ -1,14 +1,6 @@
-import { Prisma } from "generated/prisma";
-
-const cafeWithLatestReported = Prisma.validator<Prisma.CafeDefaultArgs>()({
-  include: {
-    lineup: {
-      select: { reported_date: true },
-      orderBy: { reported_date: 'desc' },
-      take: 1,
-    },
-  },
-});
+import { Cafe, Prisma } from "generated/prisma";
 
 export type CafeWithLineup = Prisma.CafeGetPayload<{ include: { lineup: true } }>;
-export type CafeWithLatestReported = Prisma.CafeGetPayload<typeof cafeWithLatestReported>;
+export type CafeWithLatestReported = Cafe & {
+    latest_reported_date: Date | null;
+};

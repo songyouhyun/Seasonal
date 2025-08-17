@@ -27,34 +27,45 @@ export class CafeService {
   async getCafes(
     { hasLineup, limit, offset }: GetCafesQueryDto,
   ): Promise<Page<CafeWithLatestReported>> {
-    const where =
-      hasLineup === undefined
-        ? {}
-        : hasLineup
-          ? { lineup: { some: {} } }
-          : { lineup: { none: {} } };
+      if (hasLineup) {
+          const latest = await this.prisma.lineup.groupBy({
+              by: ["cafe_id"],
+              _max: { reported_date: true },
+              orderBy: { _max: { reported_date: "desc" } },
+              take: limit,
+              skip: offset,
+          });
 
-    const rows = await this.prisma.cafe.findMany({
-      where,
-      skip: offset,
-      take: limit,
-      orderBy: { id: "desc" },
-      include: {
-        lineup: {
-          select: { reported_date: true },
-          orderBy: { reported_date: "desc" },
-          take: 1,
-        },
-      },
-    });
+          const ids = latest.map(r => r.cafe_id);
 
-    const hasMore = rows.length > limit;
-    if (hasMore) rows.pop();
+          const cafes = await this.prisma.cafe.findMany({
+              where: { id: { in: ids } },
+          });
 
-    return {
-      items: rows,
-      nextOffset: hasMore ? offset + limit : undefined,
-    };
+          const latestMap = new Map(latest.map(r => [r.cafe_id, r._max.reported_date]));
+
+          return {
+              items: ids.map(id => ({
+                  ...cafes.find(c => c.id === id)!,
+                  latest_reported_date: latestMap.get(id)!,
+              })),
+              nextOffset: latest.length === limit ? offset + limit : undefined,
+          };
+      } else {
+          const rows = await this.prisma.cafe.findMany({
+              skip: offset,
+              take: limit,
+              orderBy: { id: "desc" },
+          });
+
+          return {
+              items: rows.map(c => ({
+                  ...c,
+                  latest_reported_date: null,
+              })),
+              nextOffset: rows.length === limit ? offset + limit : undefined,
+          };
+      }
   }
 
   async getCafe(id: number): Promise<Cafe> {

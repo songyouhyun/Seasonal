@@ -25,7 +25,7 @@ export class CafeSummaryDto {
           cafe.id,
           cafe.name,
           cafe.address,
-          cafe.lineup?.[0]?.reported_date.toISOString() ?? null,
+          cafe.latest_reported_date.toISOString() ?? null,
         ),
     );
   }

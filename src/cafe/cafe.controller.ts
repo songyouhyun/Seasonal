@@ -11,7 +11,6 @@ import {
 import { CafeService } from './cafe.service';
 import { AddLineupDto } from './dto/add-lineup.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CafeSummaryDto } from './dto/cafe-summary.dto';
 import { CafeDetailDto } from './dto/cafe-detail.dto';
 import { CreateCafeDto } from './dto/create-cafe.dto';
 import { CafeWithLatestReported, CafeWithLineup } from './types/types';
